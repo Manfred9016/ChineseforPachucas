@@ -177,10 +177,10 @@ input {
 
 .memory-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px; 
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px; 
   width: 100%;
-  max-width: 600px; 
+  max-width: 650px; 
   margin-top: 10px;
 }
 
@@ -195,7 +195,7 @@ input {
   align-items: center;
   justify-content: center;
   position: relative;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
   padding: 5px;
 }
 
@@ -221,15 +221,16 @@ input {
 }
 
 .memory-card.matched {
-  opacity: 0.6; 
+  opacity: 1; 
   transform: scale(0.95) !important; 
   pointer-events: none; 
-  background: #e0e0e0 !important; 
-  box-shadow: 1px 1px 0px #000;
+  background: #e6ffe6 !important; 
+  border-color: #00cc55 !important; 
+  box-shadow: 0px 0px 0px #000 !important; 
 }
 .memory-card.matched span {
   display: block;
-  color: #666;
+  color: #333;
 }
 
 .falling {
@@ -293,101 +294,99 @@ input {
   .team { width: 100%; height: 80vh; }
   .game-area { min-height: 50vh; }
   .tabs { flex-direction: column; }
-  .memory-grid { grid-template-columns: repeat(4, 1fr); }
+  .memory-grid { grid-template-columns: repeat(4, 1fr); } 
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="container" id="main-container">
   <div class="team" id="girls"></div>
   <div class="team" id="boys"></div>
 </div>
 
 <script>
-// Massive Array Extracted from PDF (Units 1-12)
+// Massive Array with Contextual Chinese Sentence Hints
 const VOCAB_DATA = [
-  {"english": "customer service center", "traditional": "客服中心", "hint": "Lesson 2-2-24"},
-  {"english": "colleague, coworker", "traditional": "客戶", "hint": "Lesson 9-1-2"},
-  {"english": "commerce", "traditional": "商業", "hint": "Lesson 1-1-6"},
-  {"english": "danger", "traditional": "險", "hint": "Lesson 0-1-22"},
-  {"english": "dark", "traditional": "黑", "hint": "Lesson 6-1-26"},
-  {"english": "t o deal with, handle, tackle", "traditional": "處理", "hint": "Lesson 12-1-22"},
-  {"english": "to decrease", "traditional": "減少", "hint": "Lesson 6-1-7"},
-  {"english": "to comply with", "traditional": "遵守", "hint": "Lesson 0-1-5"},
-  {"english": "degree", "traditional": "度", "hint": "Lesson 3-1-8"},
-  {"english": "(academic) department", "traditional": "科系", "hint": "Lesson 1-2-6"},
-  {"english": "to be a consumer", "traditional": "消費", "hint": "Lesson 0-2-20"},
-  {"english": "cooking class", "traditional": "烹飪課", "hint": "Lesson 1-2-37"},
-  {"english": "(academic) credits", "traditional": "學分", "hint": "Lesson 2-2-2"},
-  {"english": "crowded with", "traditional": "擠滿", "hint": "Lesson 7-2-1"},
-  {"english": "electorate", "traditional": "選民", "hint": "Lesson 2-1-36"},
-  {"english": "electricity", "traditional": "電", "hint": "Lesson 5-1-6"},
-  {"english": "electronics", "traditional": "電子", "hint": "Lesson 5-2-2"},
-  {"english": "to emigrate", "traditional": "移民", "hint": "Lesson 3-2-2"},
-  {"english": "emission", "traditional": "排放", "hint": "Lesson 6-1-25"},
-  {"english": "to endure", "traditional": "受不了", "hint": "Lesson 0-1-20"},
-  {"english": "energy", "traditional": "能源", "hint": "Lesson 6-1-22"},
-  {"english": "to engage m (politics), to", "traditional": "從政", "hint": "Lesson 8-1-10"},
-  {"english": "engaged m", "traditional": "從事", "hint": "Lesson 2-1-27"},
-  {"english": "to e叩ect", "traditional": "預期", "hint": "Lesson 0-2-4"},
-  {"english": "to e叩ress", "traditional": "表達", "hint": "Lesson 2-1-18"},
-  {"english": "except, other than", "traditional": "以外", "hint": "Lesson 1-1-10"},
-  {"english": "flexible", "traditional": "彈性", "hint": "Lesson 2-2-37"},
-  {"english": "to form", "traditional": "構成", "hint": "Lesson 2-1-19"},
-  {"english": "frankly speaking", "traditional": "老實說", "hint": "Lesson 9-1-23"},
-  {"english": "from time to time", "traditional": "三不五時", "hint": "Lesson 7-1-12"},
-  {"english": "frugal", "traditional": "節儉", "hint": "Lesson 3-2-22"},
-  {"english": "globalization", "traditional": "全球化", "hint": "Lesson 3-1-30"},
-  {"english": "golf", "traditional": "高爾夫球", "hint": "Lesson 6-2-4"},
-  {"english": "to go out on the town", "traditional": "逛街", "hint": "Lesson 4-1-19"},
-  {"english": "high-end", "traditional": "高級", "hint": "Lesson 8-2-4"},
-  {"english": "to hi re", "traditional": "雇用", "hint": "Lesson 3-2-28"},
-  {"english": "historic site", "traditional": "古蹟", "hint": "Lesson 4-1-3"},
-  {"english": "to hit the road", "traditional": "上路", "hint": "Lesson 6-2-8"},
-  {"english": "hobby", "traditional": "嗜好", "hint": "Lesson 9-1-12"},
-  {"english": "to ignore", "traditional": "不顧", "hint": "Lesson 6-1-20"},
-  {"english": "industry", "traditional": "產業", "hint": "Lesson 1-1-3"},
-  {"english": "industry, manufactunng", "traditional": "工業", "hint": "Lesson 6-1-34"},
-  {"english": "influential", "traditional": "有影響力", "hint": "Lesson 8-2-6"},
-  {"english": "in short", "traditional": "總而言之", "hint": "Lesson 0-1-18"},
-  {"english": "instructions", "traditional": "說明", "hint": "Lesson 1-1-14"},
-  {"english": "interior, inside", "traditional": "內部", "hint": "Lesson 2-1-38"},
-  {"english": "international trade", "traditional": "國際貿易", "hint": "Lesson 9-1-15"},
-  {"english": "to mtroduce", "traditional": "介紹", "hint": "Lesson 5-1-16"},
-  {"english": "issue", "traditional": "議題", "hint": "Lesson 0-1-24"},
-  {"english": "light rail", "traditional": "輕軌", "hint": "Lesson 6-2-24"},
-  {"english": "limited", "traditional": "有限", "hint": "Lesson 9-2-29"},
-  {"english": "longevity", "traditional": "長壽", "hint": "Lesson 1-2-12"},
-  {"english": "to look upon, how one views", "traditional": "看待", "hint": "Lesson 0-1-17"},
-  {"english": "maintenance", "traditional": "保養", "hint": "Lesson 1-1-17"},
-  {"english": "to make a detour", "traditional": "繞路", "hint": "Lesson 7-2-14"},
-  {"english": "mass production", "traditional": "大量", "hint": "Lesson 1-1-4"},
-  {"english": "meanmg", "traditional": "意義", "hint": "Lesson 2-1-28"},
-  {"english": "national defense", "traditional": "國防", "hint": "Lesson 2-1-41"},
-  {"english": "nationality", "traditional": "國籍", "hint": "Lesson 3-2-26"},
-  {"english": "natural disasters", "traditional": "天災", "hint": "Lesson 6-1-14"},
-  {"english": "netizen", "traditional": "網友", "hint": "Lesson 5-1-25"},
-  {"english": "non-gamrng character", "traditional": "角色", "hint": "Lesson 9-2-21"},
-  {"english": "nowadays", "traditional": "時下", "hint": "Lesson 5-1-18"},
-  {"english": "nuclear power", "traditional": "核能", "hint": "Lesson 6-1-38"},
-  {"english": "oil, petroleum", "traditional": "石油", "hint": "Lesson 6-1-36"},
-  {"english": "old people", "traditional": "老人家", "hint": "Lesson 8-2-11"},
-  {"english": "optimistic", "traditional": "樂觀", "hint": "Lesson 0-2-11"},
-  {"english": "outwardly", "traditional": "表面上", "hint": "Lesson 9-2-33"},
-  {"english": "part time j o b", "traditional": "打工", "hint": "Lesson 2-2-41"},
-  {"english": "peaceful", "traditional": "和平", "hint": "Lesson 2-1-24"},
-  {"english": "physical checkup", "traditional": "體檢", "hint": "Lesson 1-1-25"},
-  {"english": "play", "traditional": "戲劇", "hint": "Lesson 8-2-21"},
-  {"english": "population", "traditional": "人口", "hint": "Lesson 3-2-12"},
-  {"english": "pressure", "traditional": "壓力", "hint": "Lesson 1-1-13"},
-  {"english": "public hgure", "traditional": "公眾人物", "hint": "Lesson 5-1-33"},
-  {"english": "quality", "traditional": "品質", "hint": "Lesson 2-2-24"},
-  {"english": "secondhand book", "traditional": "二手書", "hint": "Lesson 2-2-42"},
-  {"english": "smog", "traditional": "霧霾", "hint": "Lesson 6-1-24"},
-  {"english": "temperature (weather)", "traditional": "氣溫", "hint": "Lesson 3-1-20"},
-  {"english": "term, tenure of elected office", "traditional": "温", "hint": "Lesson 2-2-1"}
+  {"english": "customer service center", "traditional": "客服中心", "hint": "我打電話給客服中心處理退貨。"},
+  {"english": "colleague, coworker", "traditional": "客戶", "hint": "這位是我們公司最重要的客戶。"},
+  {"english": "commerce", "traditional": "商業", "hint": "這個地區的商業活動非常發達。"},
+  {"english": "danger", "traditional": "危險", "hint": "晚上一個人走在暗巷裡很危險。"},
+  {"english": "dark", "traditional": "黑", "hint": "外面天黑了，我們該回家了。"},
+  {"english": "to deal with, handle", "traditional": "處理", "hint": "這件麻煩的事情我會負責處理。"},
+  {"english": "to decrease", "traditional": "減少", "hint": "為了環保，我們需要減少塑膠袋的使用。"},
+  {"english": "to comply with", "traditional": "遵守", "hint": "每個人都必須遵守交通規則。"},
+  {"english": "degree", "traditional": "度", "hint": "今天夏天的氣溫高達三十五度。"},
+  {"english": "(academic) department", "traditional": "科系", "hint": "你大學是念哪一個科系畢業的？"},
+  {"english": "to be a consumer", "traditional": "消費", "hint": "這家高級餐廳的消費非常高。"},
+  {"english": "cooking class", "traditional": "烹飪課", "hint": "我週末報名了義大利麵烹飪課。"},
+  {"english": "(academic) credits", "traditional": "學分", "hint": "這個學期我修了二十個學分，非常忙碌。"},
+  {"english": "crowded with", "traditional": "擠滿", "hint": "下班時間，捷運車廂裡擠滿了人。"},
+  {"english": "electorate", "traditional": "選民", "hint": "候選人正在努力爭取選民的支持。"},
+  {"english": "electricity", "traditional": "電", "hint": "昨天颱風停電了，我們沒有電可用。"},
+  {"english": "electronics", "traditional": "電子", "hint": "他非常喜歡買最新的電子產品。"},
+  {"english": "to emigrate", "traditional": "移民", "hint": "他們全家人決定移民到加拿大生活。"},
+  {"english": "emission", "traditional": "排放", "hint": "工廠不能隨便排放有毒的廢水。"},
+  {"english": "to endure", "traditional": "受不了", "hint": "台灣夏天的天氣太熱了，我真的受不了。"},
+  {"english": "energy", "traditional": "能源", "hint": "太陽能是一種非常乾淨的能源。"},
+  {"english": "to engage in", "traditional": "從政", "hint": "他決定辭去律師的工作去從政。"},
+  {"english": "engaged in", "traditional": "從事", "hint": "她從事教育工作已經超過二十年了。"},
+  {"english": "to expect", "traditional": "預期", "hint": "今年的經濟成長比我們預期的還要好。"},
+  {"english": "to express", "traditional": "表達", "hint": "謝謝你勇敢地表達你真實的想法。"},
+  {"english": "except, other than", "traditional": "以外", "hint": "除了他以外，所有的同學都準時到了。"},
+  {"english": "flexible", "traditional": "彈性", "hint": "這家公司的上下班時間非常有彈性。"},
+  {"english": "to form", "traditional": "構成", "hint": "水是由氫和氧兩種元素構成的。"},
+  {"english": "frankly speaking", "traditional": "老實說", "hint": "老實說，我不覺得這是一個好主意。"},
+  {"english": "from time to time", "traditional": "三不五時", "hint": "雖然畢業了，我們還是會三不五時聚餐。"},
+  {"english": "frugal", "traditional": "節儉", "hint": "我的爺爺生活非常節儉，從不浪費。"},
+  {"english": "globalization", "traditional": "全球化", "hint": "全球化為世界帶來了許多改變和機會。"},
+  {"english": "golf", "traditional": "高爾夫球", "hint": "週末早上他喜歡和朋友去打高爾夫球。"},
+  {"english": "to go out on the town", "traditional": "逛街", "hint": "昨天下午我和好朋友去信義區逛街。"},
+  {"english": "high-end", "traditional": "高級", "hint": "這是一家非常受歡迎的高級法國餐廳。"},
+  {"english": "to hire", "traditional": "雇用", "hint": "公司最近雇用了許多年輕的新員工。"},
+  {"english": "historic site", "traditional": "古蹟", "hint": "台南這座城市保留了許多珍貴的歷史古蹟。"},
+  {"english": "to hit the road", "traditional": "上路", "hint": "行李都準備好了，我們準備上路吧。"},
+  {"english": "hobby", "traditional": "嗜好", "hint": "在空閒時間，聽古典音樂是我的嗜好。"},
+  {"english": "to ignore", "traditional": "不顧", "hint": "他不顧家人的反對，堅持出國留學。"},
+  {"english": "industry", "traditional": "產業", "hint": "台灣的半導體產業在世界上非常有名。"},
+  {"english": "manufacturing", "traditional": "工業", "hint": "這個國家的重工業發展得非常迅速。"},
+  {"english": "influential", "traditional": "有影響力", "hint": "他是一位在社群媒體上非常有影響力的人。"},
+  {"english": "in short", "traditional": "總而言之", "hint": "總而言之，這個計畫還需要更多時間準備。"},
+  {"english": "instructions", "traditional": "說明", "hint": "使用這個機器之前，請仔細看操作說明。"},
+  {"english": "interior, inside", "traditional": "內部", "hint": "這間新房子的內部裝潢非常漂亮。"},
+  {"english": "international trade", "traditional": "國際貿易", "hint": "他大學主修國際貿易，畢業後想出國工作。"},
+  {"english": "to introduce", "traditional": "介紹", "hint": "讓我為你介紹一下我們團隊的新成員。"},
+  {"english": "issue", "traditional": "議題", "hint": "氣候變遷是全世界都在關注的重要議題。"},
+  {"english": "light rail", "traditional": "輕軌", "hint": "去高雄玩的時候，我們可以搭乘輕軌。"},
+  {"english": "limited", "traditional": "有限", "hint": "我們的時間非常有限，必須快點做決定。"},
+  {"english": "longevity", "traditional": "長壽", "hint": "日本一直以來都是一個非常有名的長壽國家。"},
+  {"english": "how one views", "traditional": "看待", "hint": "請問你怎麼看待最近發生的這件社會新聞？"},
+  {"english": "maintenance", "traditional": "保養", "hint": "為了安全，這台機器需要每個月定期保養。"},
+  {"english": "to make a detour", "traditional": "繞路", "hint": "前面發生車禍塞車了，我們繞路走吧。"},
+  {"english": "mass production", "traditional": "大量", "hint": "工廠正在大量生產最新款的智慧型手機。"},
+  {"english": "meaning", "traditional": "意義", "hint": "這張舊照片對我有非常特別的意義。"},
+  {"english": "national defense", "traditional": "國防", "hint": "對一個國家來說，國防安全是最重要的事情。"},
+  {"english": "nationality", "traditional": "國籍", "hint": "填寫表格時，請不要忘記寫上你的國籍。"},
+  {"english": "natural disasters", "traditional": "天災", "hint": "台灣偶爾會發生颱風或地震等天災。"},
+  {"english": "netizen", "traditional": "網友", "hint": "這支影片在網路上引起了許多網友的討論。"},
+  {"english": "nowadays", "traditional": "時下", "hint": "這種風格是時下年輕人最喜歡的打扮。"},
+  {"english": "nuclear power", "traditional": "核能", "hint": "關於是否應該繼續使用核能發電，有很多爭議。"},
+  {"english": "oil, petroleum", "traditional": "石油", "hint": "最近國際石油的價格又上漲了不少。"},
+  {"english": "old people", "traditional": "老人家", "hint": "搭乘大眾運輸工具時，記得要讓座給老人家。"},
+  {"english": "optimistic", "traditional": "樂觀", "hint": "雖然遇到困難，但他對未來還是感到非常樂觀。"},
+  {"english": "outwardly", "traditional": "表面上", "hint": "表面上他看起來很冷靜，其實心裡很緊張。"},
+  {"english": "part time job", "traditional": "打工", "hint": "大學暑假的時候，我每天都會去咖啡廳打工。"},
+  {"english": "peaceful", "traditional": "和平", "hint": "我們每個人都希望這個世界能夠永遠和平。"},
+  {"english": "physical checkup", "traditional": "體檢", "hint": "公司規定每年都會安排員工去醫院做體檢。"},
+  {"english": "play", "traditional": "戲劇", "hint": "她從小就對表演很有興趣，喜歡看各種戲劇。"},
+  {"english": "population", "traditional": "人口", "hint": "過去十年，這個城市的人口成長得非常快。"},
+  {"english": "pressure", "traditional": "壓力", "hint": "期末考快到了，學生們的壓力都非常大。"},
+  {"english": "public figure", "traditional": "公眾人物", "hint": "作為一個公眾人物，隨時都要注意自己的言行。"},
+  {"english": "quality", "traditional": "品質", "hint": "這家商店賣的衣服雖然貴，但是品質非常好。"},
+  {"english": "secondhand book", "traditional": "二手書", "hint": "為了省錢，我常常去舊書店買便宜的二手書。"},
+  {"english": "smog", "traditional": "霧霾", "hint": "今天空氣品質很糟糕，外面有嚴重的霧霾。"},
+  {"english": "temperature", "traditional": "氣溫", "hint": "到了晚上，山上的氣溫會下降得很明顯。"}
 ];
 
 function playSound(type){
@@ -557,7 +556,7 @@ function createTeam(container, name){
     area.innerHTML = `
       ${renderProgress()}
       <h3>UNJUMBLE THE ENGLISH</h3>
-      <div class="hint-text">💡 Hint: ${vocab.traditional} (${vocab.hint})</div>
+      <div class="hint-text">💡 Hint: ${vocab.traditional} <br><span style="font-size:0.9em; font-weight:normal;">"${vocab.hint}"</span></div>
       <div class="word" style="font-size: 30px; text-transform: uppercase;">${scrambled}</div>
     `;
     
@@ -668,7 +667,8 @@ function createTeam(container, name){
       <div class="memory-grid"></div>
     `;
 
-    let selectedVocab = shuffle([...VOCAB_DATA]).slice(0, 18);
+    // 10 pairs selected to perfectly match the 10 words needed per level
+    let selectedVocab = shuffle([...VOCAB_DATA]).slice(0, 10);
     
     let cardsArray = [];
     selectedVocab.forEach(v => {
@@ -681,7 +681,6 @@ function createTeam(container, name){
     const grid = area.querySelector('.memory-grid');
     let flippedCards = [];
     let lockBoard = false;
-    let pairsMatchedOnThisBoard = 0;
 
     cardsArray.forEach((cardData) => {
       const card = document.createElement("div");
@@ -705,19 +704,14 @@ function createTeam(container, name){
           const match = flippedCards[0].dataset.matchId === flippedCards[1].dataset.matchId;
 
           if (match) {
-            setTimeout(() => {
-              flippedCards[0].classList.add('matched');
-              flippedCards[1].classList.add('matched');
-              flippedCards = [];
-              lockBoard = false;
-              pairsMatchedOnThisBoard++;
-              
-              handleCorrect(true); 
-              
-              if (pairsMatchedOnThisBoard === 18 && wordsCompleted < WORDS_PER_LEVEL) {
-                setTimeout(level4, 500); 
-              }
-            }, 500);
+            // INSTANT lock and style update
+            flippedCards[0].classList.add('matched');
+            flippedCards[1].classList.add('matched');
+            flippedCards = [];
+            lockBoard = false;
+            
+            // Registers score and automatically ends level when board is fully cleared
+            handleCorrect(true); 
           } else {
             handleWrong();
             setTimeout(() => {
@@ -783,8 +777,8 @@ function createTeam(container, name){
   loadCurrentLevelGame();
 }
 
-createTeam(document.getElementById("girls"), "Jessica");
-createTeam(document.getElementById("boys"), "Fred");
+createTeam(document.getElementById("girls"), "Boys");
+createTeam(document.getElementById("boys"), "Girls");
 </script>
 
 </body>
