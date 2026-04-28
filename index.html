@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartoon Network Style Game - Chinese Vocab Edition</title>
+
+<style>
+/* 2000s Cartoon Network Vibe */
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@800&display=swap');
+
+* { 
+  box-sizing: border-box; 
+}
+
+body {
+  margin: 0;
+  font-family: 'Nunito', sans-serif;
+  background-color: #00d2ff;
+  background-image: radial-gradient(#ffffff 15%, transparent 15%), radial-gradient(#ffffff 15%, transparent 15%);
+  background-size: 40px 40px;
+  background-position: 0 0, 20px 20px;
+  color: #000;
+  overflow-x: hidden;
+}
+
+h2, h3 {
+  font-family: 'Bangers', cursive;
+  letter-spacing: 2px;
+  margin: 0 0 10px 0;
+  text-shadow: 2px 2px 0px #fff;
+}
+
+.container {
+  display: flex;
+  min-height: 100vh; 
+  padding: 20px;
+  gap: 20px;
+}
+
+.team {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.card {
+  background: #ffde00;
+  border: 4px solid #000;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 8px 8px 0px #000;
+  transition: transform 0.2s;
+}
+
+#girls .card { background: #ff007a; color: #070707; }
+#boys .card { background: #00e5ff; color: #000; }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 900;
+  padding: 15px 20px;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.tab-btn {
+  flex: 1 1 auto;
+  font-family: 'Bangers', cursive;
+  font-size: 1rem;
+  padding: 8px 10px;
+  border: 3px solid #000;
+  border-radius: 8px;
+  background: #ffde00;
+  color: #000;
+  cursor: pointer;
+  box-shadow: 4px 4px 0px #000;
+  text-transform: uppercase;
+  transition: all 0.1s ease-in-out;
+  text-shadow: none;
+}
+
+.tab-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #000;
+}
+
+.tab-btn.active {
+  background: #00ff66;
+  color: #000;
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000;
+}
+
+.game-area {
+  flex: 1; 
+  min-height: 55vh; 
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #fff !important; 
+  color: #000 !important;
+  text-shadow: none !important;
+  padding: 20px; 
+}
+
+.action-btn {
+  font-family: 'Bangers', cursive;
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  border: 3px solid #000;
+  border-radius: 8px;
+  background: #ff3366;
+  color: white;
+  cursor: pointer;
+  margin: 5px;
+  box-shadow: 4px 4px 0px #000;
+  text-transform: uppercase;
+  transition: all 0.1s ease-in-out;
+}
+
+#boys .action-btn { background: #ff9900; }
+
+.action-btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #000;
+}
+
+.action-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0px 0px 0px #000;
+}
+
+.options-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 90%;
+  margin-top: 15px;
+}
+
+input {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 10px;
+  border: 3px solid #000;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 15px;
+  box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1);
+  width: 80%;
+  max-width: 300px;
+}
+
+.word { 
+  font-size: 45px; 
+  font-weight: 900;
+  margin: 15px; 
+  letter-spacing: 3px;
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.memory-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px; 
+  width: 100%;
+  max-width: 600px; 
+  margin-top: 10px;
+}
+
+.memory-card {
+  aspect-ratio: 4/3;
+  background: #ff3366;
+  border: 3px solid #000;
+  border-radius: 8px;
+  box-shadow: 3px 3px 0px #000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+  padding: 5px;
+}
+
+#boys .memory-card { background: #ff9900; }
+
+.memory-card span {
+  display: none;
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-align: center;
+  word-break: break-word;
+}
+
+.memory-card.flipped {
+  background: #fff;
+  cursor: default;
+  transform: scale(0.95);
+  box-shadow: 1px 1px 0px #000;
+}
+
+.memory-card.flipped span {
+  display: block;
+}
+
+.memory-card.matched {
+  opacity: 0.6; 
+  transform: scale(0.95) !important; 
+  pointer-events: none; 
+  background: #e0e0e0 !important; 
+  box-shadow: 1px 1px 0px #000;
+}
+.memory-card.matched span {
+  display: block;
+  color: #666;
+}
+
+.falling {
+  position: absolute;
+  padding: 8px 15px;
+  background: #b2ff05;
+  color: #000;
+  border: 3px solid #000;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 3px 3px 0px #000;
+  cursor: pointer;
+  animation: fall linear forwards;
+  z-index: 10;
+}
+
+@keyframes fall {
+  0% { top: -50px; transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+  100% { top: 110%; transform: rotate(-5deg); }
+}
+
+.progress-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+.hint-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #333;
+  background: #f0f0f0;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 3px dashed #bbb;
+  margin: 15px 0;
+  max-width: 90%;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes flashCorrect {
+  0%, 100% { background-color: #fff; }
+  50% { background-color: #00ff66; }
+}
+
+@keyframes flashWrong {
+  0%, 100% { background-color: #fff; }
+  50% { background-color: #ff3333; }
+}
+
+@media (max-width: 768px){
+  .container { flex-direction: column; height: auto; }
+  .team { width: 100%; height: 80vh; }
+  .game-area { min-height: 50vh; }
+  .tabs { flex-direction: column; }
+  .memory-grid { grid-template-columns: repeat(4, 1fr); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="team" id="girls"></div>
+  <div class="team" id="boys"></div>
+</div>
+
+<script>
+// Massive Array Extracted from PDF (Units 1-12)
+const VOCAB_DATA = [
+  {"english": "customer service center", "traditional": "客服中心", "hint": "Lesson 2-2-24"},
+  {"english": "colleague, coworker", "traditional": "客戶", "hint": "Lesson 9-1-2"},
+  {"english": "commerce", "traditional": "商業", "hint": "Lesson 1-1-6"},
+  {"english": "danger", "traditional": "險", "hint": "Lesson 0-1-22"},
+  {"english": "dark", "traditional": "黑", "hint": "Lesson 6-1-26"},
+  {"english": "t o deal with, handle, tackle", "traditional": "處理", "hint": "Lesson 12-1-22"},
+  {"english": "to decrease", "traditional": "減少", "hint": "Lesson 6-1-7"},
+  {"english": "to comply with", "traditional": "遵守", "hint": "Lesson 0-1-5"},
+  {"english": "degree", "traditional": "度", "hint": "Lesson 3-1-8"},
+  {"english": "(academic) department", "traditional": "科系", "hint": "Lesson 1-2-6"},
+  {"english": "to be a consumer", "traditional": "消費", "hint": "Lesson 0-2-20"},
+  {"english": "cooking class", "traditional": "烹飪課", "hint": "Lesson 1-2-37"},
+  {"english": "(academic) credits", "traditional": "學分", "hint": "Lesson 2-2-2"},
+  {"english": "crowded with", "traditional": "擠滿", "hint": "Lesson 7-2-1"},
+  {"english": "electorate", "traditional": "選民", "hint": "Lesson 2-1-36"},
+  {"english": "electricity", "traditional": "電", "hint": "Lesson 5-1-6"},
+  {"english": "electronics", "traditional": "電子", "hint": "Lesson 5-2-2"},
+  {"english": "to emigrate", "traditional": "移民", "hint": "Lesson 3-2-2"},
+  {"english": "emission", "traditional": "排放", "hint": "Lesson 6-1-25"},
+  {"english": "to endure", "traditional": "受不了", "hint": "Lesson 0-1-20"},
+  {"english": "energy", "traditional": "能源", "hint": "Lesson 6-1-22"},
+  {"english": "to engage m (politics), to", "traditional": "從政", "hint": "Lesson 8-1-10"},
+  {"english": "engaged m", "traditional": "從事", "hint": "Lesson 2-1-27"},
+  {"english": "to e叩ect", "traditional": "預期", "hint": "Lesson 0-2-4"},
+  {"english": "to e叩ress", "traditional": "表達", "hint": "Lesson 2-1-18"},
+  {"english": "except, other than", "traditional": "以外", "hint": "Lesson 1-1-10"},
+  {"english": "flexible", "traditional": "彈性", "hint": "Lesson 2-2-37"},
+  {"english": "to form", "traditional": "構成", "hint": "Lesson 2-1-19"},
+  {"english": "frankly speaking", "traditional": "老實說", "hint": "Lesson 9-1-23"},
+  {"english": "from time to time", "traditional": "三不五時", "hint": "Lesson 7-1-12"},
+  {"english": "frugal", "traditional": "節儉", "hint": "Lesson 3-2-22"},
+  {"english": "globalization", "traditional": "全球化", "hint": "Lesson 3-1-30"},
+  {"english": "golf", "traditional": "高爾夫球", "hint": "Lesson 6-2-4"},
+  {"english": "to go out on the town", "traditional": "逛街", "hint": "Lesson 4-1-19"},
+  {"english": "high-end", "traditional": "高級", "hint": "Lesson 8-2-4"},
+  {"english": "to hi re", "traditional": "雇用", "hint": "Lesson 3-2-28"},
+  {"english": "historic site", "traditional": "古蹟", "hint": "Lesson 4-1-3"},
+  {"english": "to hit the road", "traditional": "上路", "hint": "Lesson 6-2-8"},
+  {"english": "hobby", "traditional": "嗜好", "hint": "Lesson 9-1-12"},
+  {"english": "to ignore", "traditional": "不顧", "hint": "Lesson 6-1-20"},
+  {"english": "industry", "traditional": "產業", "hint": "Lesson 1-1-3"},
+  {"english": "industry, manufactunng", "traditional": "工業", "hint": "Lesson 6-1-34"},
+  {"english": "influential", "traditional": "有影響力", "hint": "Lesson 8-2-6"},
+  {"english": "in short", "traditional": "總而言之", "hint": "Lesson 0-1-18"},
+  {"english": "instructions", "traditional": "說明", "hint": "Lesson 1-1-14"},
+  {"english": "interior, inside", "traditional": "內部", "hint": "Lesson 2-1-38"},
+  {"english": "international trade", "traditional": "國際貿易", "hint": "Lesson 9-1-15"},
+  {"english": "to mtroduce", "traditional": "介紹", "hint": "Lesson 5-1-16"},
+  {"english": "issue", "traditional": "議題", "hint": "Lesson 0-1-24"},
+  {"english": "light rail", "traditional": "輕軌", "hint": "Lesson 6-2-24"},
+  {"english": "limited", "traditional": "有限", "hint": "Lesson 9-2-29"},
+  {"english": "longevity", "traditional": "長壽", "hint": "Lesson 1-2-12"},
+  {"english": "to look upon, how one views", "traditional": "看待", "hint": "Lesson 0-1-17"},
+  {"english": "maintenance", "traditional": "保養", "hint": "Lesson 1-1-17"},
+  {"english": "to make a detour", "traditional": "繞路", "hint": "Lesson 7-2-14"},
+  {"english": "mass production", "traditional": "大量", "hint": "Lesson 1-1-4"},
+  {"english": "meanmg", "traditional": "意義", "hint": "Lesson 2-1-28"},
+  {"english": "national defense", "traditional": "國防", "hint": "Lesson 2-1-41"},
+  {"english": "nationality", "traditional": "國籍", "hint": "Lesson 3-2-26"},
+  {"english": "natural disasters", "traditional": "天災", "hint": "Lesson 6-1-14"},
+  {"english": "netizen", "traditional": "網友", "hint": "Lesson 5-1-25"},
+  {"english": "non-gamrng character", "traditional": "角色", "hint": "Lesson 9-2-21"},
+  {"english": "nowadays", "traditional": "時下", "hint": "Lesson 5-1-18"},
+  {"english": "nuclear power", "traditional": "核能", "hint": "Lesson 6-1-38"},
+  {"english": "oil, petroleum", "traditional": "石油", "hint": "Lesson 6-1-36"},
+  {"english": "old people", "traditional": "老人家", "hint": "Lesson 8-2-11"},
+  {"english": "optimistic", "traditional": "樂觀", "hint": "Lesson 0-2-11"},
+  {"english": "outwardly", "traditional": "表面上", "hint": "Lesson 9-2-33"},
+  {"english": "part time j o b", "traditional": "打工", "hint": "Lesson 2-2-41"},
+  {"english": "peaceful", "traditional": "和平", "hint": "Lesson 2-1-24"},
+  {"english": "physical checkup", "traditional": "體檢", "hint": "Lesson 1-1-25"},
+  {"english": "play", "traditional": "戲劇", "hint": "Lesson 8-2-21"},
+  {"english": "population", "traditional": "人口", "hint": "Lesson 3-2-12"},
+  {"english": "pressure", "traditional": "壓力", "hint": "Lesson 1-1-13"},
+  {"english": "public hgure", "traditional": "公眾人物", "hint": "Lesson 5-1-33"},
+  {"english": "quality", "traditional": "品質", "hint": "Lesson 2-2-24"},
+  {"english": "secondhand book", "traditional": "二手書", "hint": "Lesson 2-2-42"},
+  {"english": "smog", "traditional": "霧霾", "hint": "Lesson 6-1-24"},
+  {"english": "temperature (weather)", "traditional": "氣溫", "hint": "Lesson 3-1-20"},
+  {"english": "term, tenure of elected office", "traditional": "温", "hint": "Lesson 2-2-1"}
+];
+
+function playSound(type){
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+  
+  osc.connect(gainNode);
+  gainNode.connect(ctx.destination);
+  
+  if(type === "correct"){
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(400, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.1);
+    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.2);
+  } else if (type === "wrong") {
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.2);
+    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.2);
+  } else if (type === "levelUp") {
+    osc.type = "square";
+    osc.frequency.setValueAtTime(400, ctx.currentTime);
+    osc.frequency.setValueAtTime(600, ctx.currentTime + 0.1);
+    osc.frequency.setValueAtTime(800, ctx.currentTime + 0.2);
+    gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.4);
+  }
+}
+
+function shuffle(array){
+  return array.sort(()=>Math.random()-0.5);
+}
+
+function createTeam(container, name){
+  container.innerHTML = `
+    <div class="card header">
+      <h2>${name}</h2>
+      <div>SCORE: <span class="score">0</span></div>
+    </div>
+    
+    <div class="tabs">
+      <button class="tab-btn" data-level="1">Unjumble</button>
+      <button class="tab-btn" data-level="2">Eng ➔ 中文</button>
+      <button class="tab-btn" data-level="3">中文 ➔ Eng</button>
+      <button class="tab-btn" data-level="4">Memory</button>
+      <button class="tab-btn" data-level="5">Catch It</button>
+    </div>
+
+    <div class="card game-area"></div>
+    <div style="text-align: center;">
+      <button class="action-btn restart">Restart Score</button>
+    </div>
+  `;
+
+  let score = 0, level = 1, wordsCompleted = 0;
+  const WORDS_PER_LEVEL = 10; 
+  
+  const scoreEl = container.querySelector(".score");
+  const area = container.querySelector(".game-area");
+  const tabBtns = container.querySelectorAll(".tab-btn");
+
+  tabBtns.forEach(btn => {
+    btn.onclick = () => {
+      clearFallingItems(); 
+      level = parseInt(btn.dataset.level);
+      wordsCompleted = 0; 
+      loadCurrentLevelGame();
+    };
+  });
+
+  function clearFallingItems() {
+    if(container.spawnInterval) clearInterval(container.spawnInterval);
+    area.querySelectorAll('.falling').forEach(el => el.remove());
+  }
+
+  function updateActiveTab() {
+    tabBtns.forEach(b => {
+      if (parseInt(b.dataset.level) === level) {
+        b.classList.add("active");
+      } else {
+        b.classList.remove("active");
+      }
+    });
+  }
+
+  function updateScore(val){
+    score += val;
+    scoreEl.textContent = score;
+  }
+
+  function triggerAnimation(type) {
+    area.style.animation = "none";
+    void area.offsetWidth; 
+    area.style.animation = type === 'correct' ? "flashCorrect 0.4s" : "flashWrong 0.4s";
+  }
+
+  function handleCorrect(preventReload = false) {
+    playSound("correct");
+    triggerAnimation('correct');
+    updateScore(10);
+    wordsCompleted++;
+
+    if(wordsCompleted >= WORDS_PER_LEVEL) {
+      playSound("levelUp");
+      showNextLevelButton();
+    } else if (!preventReload) {
+      loadCurrentLevelGame(); 
+    }
+  }
+
+  function handleWrong() {
+    playSound("wrong");
+    triggerAnimation('wrong');
+    updateScore(-5);
+  }
+
+  function showNextLevelButton() {
+    clearFallingItems();
+    area.innerHTML = `
+      <h2>LEVEL ${level} COMPLETE!</h2>
+      <p>Great job! You finished the level.</p>
+      <button class="action-btn" id="next-btn">NEXT LEVEL 🚀</button>
+    `;
+    area.querySelector("#next-btn").onclick = () => {
+      level++;
+      wordsCompleted = 0;
+      if (level > 5) {
+        area.innerHTML = `<h2>GAME OVER!</h2><h3>FINAL SCORE: ${score}</h3><br><p>Pick a tab above to play again!</p>`;
+      } else {
+        loadCurrentLevelGame();
+      }
+    };
+  }
+
+  function loadCurrentLevelGame() {
+    updateActiveTab();
+    if(level === 1) level1();
+    else if(level === 2) level2();
+    else if(level === 3) level3();
+    else if(level === 4) level4();
+    else if(level === 5) level5();
+  }
+
+  function renderProgress() {
+    return `<div class="progress-text">Progress ${wordsCompleted + 1} / ${WORDS_PER_LEVEL}</div>`;
+  }
+
+  // LEVEL 1: Unjumble English Translation
+  function level1(){
+    const vocab = VOCAB_DATA[Math.random() * VOCAB_DATA.length | 0];
+    const targetWord = vocab.english;
+    
+    let scrambled = shuffle(targetWord.split('')).join('');
+    while(scrambled.toLowerCase() === targetWord.toLowerCase() && targetWord.length > 1) {
+        scrambled = shuffle(targetWord.split('')).join('');
+    }
+
+    area.innerHTML = `
+      ${renderProgress()}
+      <h3>UNJUMBLE THE ENGLISH</h3>
+      <div class="hint-text">💡 Hint: ${vocab.traditional} (${vocab.hint})</div>
+      <div class="word" style="font-size: 30px; text-transform: uppercase;">${scrambled}</div>
+    `;
+    
+    const input = document.createElement("input");
+    const btn = document.createElement("button");
+    btn.className = "action-btn";
+    btn.textContent = "CHECK!";
+
+    btn.onclick = ()=>{
+      const sanitizedInput = input.value.replace(/\s/g, '').toLowerCase();
+      const sanitizedTarget = targetWord.replace(/\s/g, '').toLowerCase();
+      
+      if(sanitizedInput === sanitizedTarget){
+        handleCorrect();
+      } else {
+        handleWrong();
+        input.value = "";
+      }
+    };
+
+    input.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") btn.click();
+    });
+
+    const actionContainer = document.createElement("div");
+    actionContainer.style.width = "100%";
+    actionContainer.appendChild(input);
+    actionContainer.appendChild(document.createElement("br"));
+    actionContainer.appendChild(btn);
+
+    area.appendChild(actionContainer);
+    setTimeout(() => input.focus(), 100);
+  }
+
+  // LEVEL 2: Eng to Chinese
+  function level2(){
+    const vocab = VOCAB_DATA[Math.random() * VOCAB_DATA.length | 0];
+    
+    area.innerHTML = `
+      ${renderProgress()}
+      <h3>SELECT THE CHINESE</h3>
+      <div class="word" style="font-size: 30px;">${vocab.english.toUpperCase()}</div>
+    `;
+
+    const options = [...VOCAB_DATA].sort(()=>Math.random()-0.5).slice(0,4).map(v => v.traditional);
+    if(!options.includes(vocab.traditional)) options[0] = vocab.traditional;
+    shuffle(options); 
+
+    const btnContainer = document.createElement("div");
+    btnContainer.className = "options-grid";
+    options.forEach(opt=>{
+      const btn = document.createElement("button");
+      btn.className = "action-btn";
+      btn.style.fontSize = "1.5rem";
+      btn.textContent = opt;
+      btn.onclick = ()=>{
+        if(opt === vocab.traditional){
+          handleCorrect();
+        } else {
+          handleWrong();
+        }
+      };
+      btnContainer.appendChild(btn);
+    });
+
+    area.appendChild(btnContainer);
+  }
+
+  // LEVEL 3: Chinese to Eng
+  function level3(){
+    const vocab = VOCAB_DATA[Math.random() * VOCAB_DATA.length | 0];
+    
+    area.innerHTML = `
+      ${renderProgress()}
+      <h3>SELECT THE ENGLISH</h3>
+      <div class="word" style="font-size: 60px;">${vocab.traditional}</div>
+    `;
+
+    const options = [...VOCAB_DATA].sort(()=>Math.random()-0.5).slice(0,4).map(v => v.english);
+    if(!options.includes(vocab.english)) options[0] = vocab.english;
+    shuffle(options); 
+
+    const btnContainer = document.createElement("div");
+    btnContainer.className = "options-grid";
+    options.forEach(opt=>{
+      const btn = document.createElement("button");
+      btn.className = "action-btn";
+      btn.style.fontSize = "1rem";
+      btn.textContent = opt;
+      btn.onclick = ()=>{
+        if(opt === vocab.english){
+          handleCorrect();
+        } else {
+          handleWrong();
+        }
+      };
+      btnContainer.appendChild(btn);
+    });
+
+    area.appendChild(btnContainer);
+  }
+
+  // LEVEL 4: Memory Match (Chinese -> English)
+  function level4(){
+    area.innerHTML = `
+      ${renderProgress()}
+      <h3>MATCH WORD & MEANING</h3>
+      <div class="memory-grid"></div>
+    `;
+
+    let selectedVocab = shuffle([...VOCAB_DATA]).slice(0, 18);
+    
+    let cardsArray = [];
+    selectedVocab.forEach(v => {
+        cardsArray.push({ display: v.english, matchId: v.english, type: 'eng' });
+        cardsArray.push({ display: v.traditional, matchId: v.english, type: 'zh' });
+    });
+    
+    shuffle(cardsArray);
+
+    const grid = area.querySelector('.memory-grid');
+    let flippedCards = [];
+    let lockBoard = false;
+    let pairsMatchedOnThisBoard = 0;
+
+    cardsArray.forEach((cardData) => {
+      const card = document.createElement("div");
+      card.className = "memory-card";
+      card.dataset.matchId = cardData.matchId;
+      
+      const textSpan = document.createElement("span");
+      textSpan.textContent = cardData.display;
+      if(cardData.type === 'zh') textSpan.style.fontSize = "1.5rem";
+      
+      card.appendChild(textSpan);
+
+      card.onclick = () => {
+        if (lockBoard || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+        
+        card.classList.add('flipped');
+        flippedCards.push(card);
+
+        if (flippedCards.length === 2) {
+          lockBoard = true;
+          const match = flippedCards[0].dataset.matchId === flippedCards[1].dataset.matchId;
+
+          if (match) {
+            setTimeout(() => {
+              flippedCards[0].classList.add('matched');
+              flippedCards[1].classList.add('matched');
+              flippedCards = [];
+              lockBoard = false;
+              pairsMatchedOnThisBoard++;
+              
+              handleCorrect(true); 
+              
+              if (pairsMatchedOnThisBoard === 18 && wordsCompleted < WORDS_PER_LEVEL) {
+                setTimeout(level4, 500); 
+              }
+            }, 500);
+          } else {
+            handleWrong();
+            setTimeout(() => {
+              flippedCards[0].classList.remove('flipped');
+              flippedCards[1].classList.remove('flipped');
+              flippedCards = [];
+              lockBoard = false;
+            }, 1000);
+          }
+        }
+      };
+      grid.appendChild(card);
+    });
+  }
+
+  // LEVEL 5: Catch It! (Falling English Translations)
+  function level5(){
+    const targetVocab = VOCAB_DATA[Math.random() * VOCAB_DATA.length | 0];
+    
+    area.innerHTML = `
+      ${renderProgress()}
+      <h3>CATCH THE TRANSLATION!</h3>
+      <div class="word" style="font-size: 50px; margin: 0;">${targetVocab.traditional}</div>
+    `;
+
+    clearFallingItems();
+
+    container.spawnInterval = setInterval(()=>{
+      const wordDiv = document.createElement("div");
+      wordDiv.className = "falling";
+      
+      const isTarget = Math.random() > 0.7;
+      const spawnVocab = isTarget ? targetVocab : VOCAB_DATA[Math.random() * VOCAB_DATA.length | 0];
+      
+      wordDiv.textContent = spawnVocab.english;
+      wordDiv.style.left = (10 + Math.random()*60) + "%";
+      wordDiv.style.animationDuration = (2.5 + Math.random()*2) + "s";
+
+      wordDiv.onclick = ()=>{
+        if(wordDiv.textContent === targetVocab.english){
+          clearFallingItems();
+          handleCorrect();
+        } else {
+          handleWrong();
+        }
+        wordDiv.remove();
+      };
+
+      area.appendChild(wordDiv);
+      setTimeout(()=> {
+          if(area.contains(wordDiv)) wordDiv.remove();
+      }, 5000);
+    }, 1000);
+  }
+
+  container.querySelector(".restart").onclick = ()=>{
+    clearFallingItems();
+    score = 0; level = 1; wordsCompleted = 0;
+    scoreEl.textContent = 0;
+    loadCurrentLevelGame();
+  };
+
+  loadCurrentLevelGame();
+}
+
+createTeam(document.getElementById("girls"), "Boys");
+createTeam(document.getElementById("boys"), "Girls");
+</script>
+
+</body>
+</html>
